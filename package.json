@@ -1,0 +1,30 @@
+{
+  "name": "extract-inline-scripts",
+  "description": "extract inline scripts",
+  "version": "0.0.1",
+  "author": "irok",
+  "bin": {
+    "extis": "cli.js"
+  },
+  "bugs": {
+    "url": "https://github.com/irok/extract-inline-scripts/issues"
+  },
+  "dependencies": {
+    "glob": "^7.1.2",
+    "htmlparser2": "^3.9.2",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {},
+  "homepage": "https://github.com/irok/extract-inline-scripts",
+  "keywords": [],
+  "license": "MIT",
+  "main": "index.js",
+  "preferGlobal": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/irok/extract-inline-scripts"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
