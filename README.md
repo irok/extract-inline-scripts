@@ -13,6 +13,10 @@ $ extis [OPTIONS] globs
 
 ### OPTIONS
 * `-c`
-    * show code
+    * print the code.
 * `-d`
-    * show duplicated
+    * analyze the duplicated code.
+* `-n [NUM]`
+    * print the first NUM lines.
+* `-l [NUM]`
+    * extract the scripts with NUM lines or more.

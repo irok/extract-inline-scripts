@@ -7,8 +7,10 @@ const argv = require('minimist')(process.argv.slice(2));
 if (argv._.length === 0) {
   console.error(`Usage: extis [OPTIONS] globs
   OPTIONS
-  -c  show code
-  -d  show duplicated
+  -c          print the code.
+  -d          analyze the duplicated code.
+  -n [NUM]    print the first NUM lines.
+  -l [NUM]    extract the scripts with NUM lines or more.
   `);
   process.exit(1);
 }
