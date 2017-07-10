@@ -21,18 +21,30 @@ Array.prototype.flatMap = function(cb) {
   return results;
 }
 
+function printCode(code) {
+  if (argv.n && /^[1-9]\d*$/.test(argv.n)) {
+    const lines = code.split(/\n/);
+    if (lines.length > argv.n) {
+      lines.length = argv.n;
+      code = lines.join('\n');
+    }
+  }
+  code = code.replace(/\n$/, '');
+  console.info(`\n${code}\n`);
+}
+
 function showList(scripts) {
   var filename = '';
   scripts.forEach(({file, line, code}) => {
     if (filename !== file) {
-      if (filename !== '' && !argv.v) {
+      if (filename !== '' && !argv.c) {
         console.info('');
       }
       console.info(filename = file);
     }
-    console.info(`  line: ${line}`);
+    console.info(`line: ${line}`);
     if (argv.c) {
-      console.info(`${code}\n`);
+      printCode(code);
     }
   });
 }
@@ -58,13 +70,12 @@ function showDuplicated(scripts) {
     .filter((key) => hashmap[key].count >= 2)
     .sort(descCount)
     .forEach((key) => {
-      console.info(`${key}`);
       hashmap[key].at.forEach(({file, line}) => {
-        console.info(`  file: ${file}  line: ${line}`);
+        console.info(`${file} (${line})`);
       });
 
       if (argv.c) {
-        console.info(`${hashmap[key].code}\n`);
+        printCode(hashmap[key].code);
       } else {
         console.info('');
       }
@@ -80,10 +91,17 @@ function getScripts(file) {
 }
 
 try {
-  const scripts = argv._
+  var scripts = argv._
     .flatMap(glob.sync)
     .filter((file) => fs.statSync(file).isFile())
     .flatMap(getScripts);
+
+  if (argv.l && /^[1-9]\d*$/.test(argv.l)) {
+    scripts = scripts.filter((script) => {
+      const lines = script.code.replace(/\n$/, '').split(/\n/);
+      return lines.length >= argv.l
+    });
+  }
 
   if (argv.d) {
     showDuplicated(scripts);
