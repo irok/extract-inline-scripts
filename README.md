@@ -8,7 +8,7 @@ npm install --global extract-inline-scripts
 
 ## Usage
 ```
-$ extis [OPTIONS] globs
+$ extis globs [OPTIONS]
 ```
 
 ### OPTIONS

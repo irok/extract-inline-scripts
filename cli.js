@@ -5,7 +5,7 @@ const glob = require('glob');
 
 const argv = require('minimist')(process.argv.slice(2));
 if (argv._.length === 0) {
-  console.error(`Usage: extis [OPTIONS] globs
+  console.error(`Usage: extis globs [OPTIONS]
   OPTIONS
   -c          print the code.
   -d          analyze the duplicated code.
