@@ -15,6 +15,9 @@ if (argv._.length === 0) {
   process.exit(1);
 }
 
+const showLines = atoi(argv.n);
+const limitLines = atoi(argv.l);
+
 Array.prototype.flatMap = function(cb) {
   var results = [];
   this.forEach((elem) => {
@@ -23,37 +26,53 @@ Array.prototype.flatMap = function(cb) {
   return results;
 }
 
-function printCode(code) {
-  if (argv.n && /^[1-9]\d*$/.test(argv.n)) {
-    const lines = code.split(/\n/);
-    if (lines.length > argv.n) {
-      lines.length = argv.n;
-      code = lines.join('\n');
-    }
-  }
-  code = code.replace(/\n$/, '');
-  console.info(`\n${code}\n`);
+function atoi(str) {
+  const num = parseInt(str);
+  return isNaN(num) ? 0 : num;
 }
 
-function showList(scripts) {
+function getPrintCode(code) {
+  const lines = code.split(/\n/);
+  if (0 < showLines && showLines < lines.length) {
+    lines.length = showLines;
+  }
+  return lines.join('\n').replace(/\n$/, '');
+}
+
+function printList(scripts) {
   var filename = '';
   scripts.forEach(({file, line, code}) => {
     if (filename !== file) {
-      if (filename !== '' && !argv.c) {
+      if (filename !== '') {
         console.info('');
       }
       console.info(filename = file);
     }
     console.info(`line: ${line}`);
     if (argv.c) {
-      printCode(code);
+      console.info(`\n${getPrintCode(code)}`);
     }
   });
 }
 
-function showDuplicated(scripts) {
+function printDuplicated(hashmap) {
+  Object.keys(hashmap)
+    .map((key) => hashmap[key])
+    .filter((dup) => dup.count >= 2)
+    .sort((a, b) => b.count - a.count)
+    .forEach((dup) => {
+      dup.at.forEach(({file, line}) => {
+        console.info(`${file} (${line})`);
+      });
+      if (argv.c) {
+        console.info(`\n${getPrintCode(dup.code)}`);
+      }
+      console.info('');
+    });
+}
+
+function analyze(scripts) {
   const hashmap = {};
-  const descCount = (a, b) => hashmap[b].count - hashmap[a].count;
 
   scripts.forEach(({file, line, code, hash}) => {
     if (!hashmap[hash]) {
@@ -68,47 +87,35 @@ function showDuplicated(scripts) {
     hashmap[hash].count++;
   });
 
-  Object.keys(hashmap)
-    .filter((key) => hashmap[key].count >= 2)
-    .sort(descCount)
-    .forEach((key) => {
-      hashmap[key].at.forEach(({file, line}) => {
-        console.info(`${file} (${line})`);
-      });
-
-      if (argv.c) {
-        printCode(hashmap[key].code);
-      } else {
-        console.info('');
-      }
-    });
+  return hashmap;
 }
 
 function getScripts(file) {
   const html = fs.readFileSync(file, 'utf-8');
-  return extractInlineScripts(html).map((script) => {
+  const scripts = extractInlineScripts(html).map((script) => {
     script.file = file;
     return script;
   });
+
+  if (limitLines > 0) {
+    return scripts.filter((script) => {
+      const lines = script.code.replace(/\n$/, '').split(/\n/).length;
+      return lines >= limitLines;
+    });
+  }
+  return scripts;
 }
 
 try {
-  var scripts = argv._
+  const scripts = argv._
     .flatMap(glob.sync)
     .filter((file) => fs.statSync(file).isFile())
     .flatMap(getScripts);
 
-  if (argv.l && /^[1-9]\d*$/.test(argv.l)) {
-    scripts = scripts.filter((script) => {
-      const lines = script.code.replace(/\n$/, '').split(/\n/);
-      return lines.length >= argv.l
-    });
-  }
-
   if (argv.d) {
-    showDuplicated(scripts);
+    printDuplicated(analyze(scripts));
   } else {
-    showList(scripts);
+    printList(scripts);
   }
 }
 catch (err) {
