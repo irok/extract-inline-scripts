@@ -10,6 +10,7 @@
     "url": "https://github.com/irok/extract-inline-scripts/issues"
   },
   "dependencies": {
+    "bash-color": "0.0.4",
     "glob": "^7.1.2",
     "htmlparser2": "^3.9.2",
     "minimist": "^1.2.0"

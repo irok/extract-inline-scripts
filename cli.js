@@ -2,6 +2,7 @@
 const extractInlineScripts = require('./');
 const fs = require('fs');
 const glob = require('glob');
+const color = require('bash-color');
 
 const argv = require('minimist')(process.argv.slice(2));
 if (argv._.length === 0) {
@@ -43,14 +44,14 @@ function printList(scripts) {
   var filename = '';
   scripts.forEach(({file, line, code}) => {
     if (filename !== file) {
-      if (filename !== '') {
+      if (filename !== '' && !argv.c) {
         console.info('');
       }
-      console.info(filename = file);
+      console.info(color.cyan(filename = file));
     }
-    console.info(`line: ${line}`);
+    console.info(color.yellow(`line: ${line}`));
     if (argv.c) {
-      console.info(`\n${getPrintCode(code)}`);
+      console.info(`${getPrintCode(code)}\n`);
     }
   });
 }
@@ -62,10 +63,10 @@ function printDuplicated(hashmap) {
     .sort((a, b) => b.count - a.count)
     .forEach((dup) => {
       dup.at.forEach(({file, line}) => {
-        console.info(`${file} (${line})`);
+        console.info(`${color.cyan(file)} (${color.yellow(line)})`);
       });
       if (argv.c) {
-        console.info(`\n${getPrintCode(dup.code)}`);
+        console.info(getPrintCode(dup.code));
       }
       console.info('');
     });
