@@ -1,7 +1,7 @@
 {
   "name": "extract-inline-scripts",
   "description": "extract inline scripts",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "author": "irok",
   "bin": {
     "extis": "cli.js"
