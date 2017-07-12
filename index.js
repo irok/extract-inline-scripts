@@ -5,6 +5,10 @@ function trim(str) {
   return str.replace(/^\n|\x20+$/g, '');
 }
 
+function normalize(str) {
+  return str.replace(/^[\t\x20]+/mg, '').replace(/\s+$/, '');
+}
+
 function extractInlineScripts(html) {
   var fromIndex = 0;
 
@@ -26,7 +30,7 @@ function extractInlineScripts(html) {
         const script = {
           code: trim(node.children[0].data)
         };
-        script.hash = crypto.createHash('md5').update(script.code).digest('hex');
+        script.hash = crypto.createHash('md5').update(normalize(script.code)).digest('hex');
 
         // search line
         const index = html.indexOf(script.code, fromIndex);
